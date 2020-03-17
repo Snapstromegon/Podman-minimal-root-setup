@@ -8,7 +8,7 @@ This git targets the best hosters I know: Uberspace ♥.
 
 ### Using Ansible
 
-Inside the ansible folder there are 4 .ansible playbooks.
+Inside the ansible folder there are six .ansible playbooks.
 
 - complete.ansible - this runs the other plays
 - default_yum_install - this runs play 01 and 02, but installs podman via yum
