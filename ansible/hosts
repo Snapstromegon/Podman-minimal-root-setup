@@ -1,2 +1,2 @@
 [podman]
-192.168.179.104 ansible_user=snapstromegon
+192.168.178.179 ansible_user=snapstromegon

@@ -1,0 +1,36 @@
+- include: 01_immitate_uberspace.ansible
+- include: 02_pre_setup.ansible
+
+- name: "Test"
+  hosts: podman
+  tasks:
+    - name: download packages
+      become: yes
+      yum:
+        download_dir: rpms
+        download_only: true
+        name:
+          - podman
+          - slirp4netns
+          - runc
+          - containernetworking-plugins
+          - containers-common
+          - container-selinux
+          - criu
+          - protobuf-c
+
+    - name: extract rpms
+      shell:
+        cmd: "for file in rpms/* ; do rpm2cpio $file | cpio -vidm ; done"
+        chdir: ~/
+
+    - name: copy configuration
+      copy:
+        src: ../.config
+        dest: ~/
+
+    - name: Update bashrc
+      lineinfile:
+        path: .bashrc
+        regexp: "export PATH=$PATH:$HOME/usr/bin:$HOME/usr/sbin"
+        line: "export PATH=$PATH:$HOME/usr/bin:$HOME/usr/sbin"
