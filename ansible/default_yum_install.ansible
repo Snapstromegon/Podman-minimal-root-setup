@@ -1,0 +1,12 @@
+- include: 01_immitate_uberspace.ansible
+- include: 02_pre_setup.ansible
+
+- name: install podman
+  hosts: podman
+  become: yes
+  tasks:
+    - name: "install"
+      yum:
+        name:
+          - podman
+          - slirp4netns
