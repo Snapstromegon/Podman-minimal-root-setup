@@ -1,0 +1,61 @@
+# BE CAREFUL! THIS PLAYBOOK IS NOT IDEMPOTENT #
+# it might break already running processes    #
+
+
+- name: Install Podman as user
+  hosts: podman
+  vars:
+    opensuse_base_url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/CentOS_7/x86_64
+    opensuse_rpms:
+      - buildah-1.14.0-1.1.el7.x86_64.rpm
+      - conmon-2.0.12-1.1.el7.x86_64.rpm
+      - containernetworking-plugins-0.8.5-11.1.el7.x86_64.rpm
+      - containers-common-0.1.41-7.1.el7.x86_64.rpm
+      - podman-1.8.1-2.1.el7.x86_64.rpm
+      - podman-plugins-1.8.1-2.1.el7.x86_64.rpm
+      - runc-1.0.0-15.1.el7.x86_64.rpm
+      - skopeo-0.1.41-7.1.el7.x86_64.rpm
+    criu_rpm: https://download.copr.fedorainfracloud.org/results/adrian/criu-el7/epel-7-x86_64/01033643-criu/criu-3.13-5.el7.x86_64.rpm
+    slirp4netns_bin: https://github.com/rootless-containers/slirp4netns/releases/download/v0.4.3/slirp4netns-x86_64
+
+  tasks:
+    - name: Creates rpms folder
+      file:
+        path: rpms
+        state: directory
+    - name: Download prebuild rpms from opensuse
+      get_url:
+        url: "{{ opensuse_base_url }}/{{ item }}"
+        dest: "rpms/{{ item }}"
+      with_items: "{{ opensuse_rpms }}"
+    - name: extract rpms
+      shell:
+        cmd: "rpm2cpio rpms/{{ item }} | cpio -vidm"
+        chdir: ~/
+      with_items: "{{ opensuse_rpms }}"
+
+    - name: Download criu
+      get_url:
+        url: "{{ criu_rpm }}"
+        dest: "rpms/criu.rpm"
+    - name: extract criu
+      command:
+        cmd: "rpm2cpio rpms/criu.rpm | cpio -vidm"
+        chdir: ~/
+    
+    - name: Download Slirp4netns
+      get_url:
+        url: "{{ slirp4netns_bin }}"
+        dest: "usr/bin/slirp4netns"
+        mode: u+rwx
+
+    - name: copy configuration
+      copy:
+        src: ../.config
+        dest: ~/
+
+    - name: Update bashrc
+      lineinfile:
+        path: .bashrc
+        regexp: "export PATH=$PATH:$HOME/usr/bin:$HOME/usr/sbin"
+        line: "export PATH=$PATH:$HOME/usr/bin:$HOME/usr/sbin"

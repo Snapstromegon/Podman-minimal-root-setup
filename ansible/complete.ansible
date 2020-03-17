@@ -1,0 +1,3 @@
+- include: 01_immitate_uberspace.ansible
+- include: 02_pre_setup.ansible
+- include: 03_podman.ansible

@@ -1,0 +1,26 @@
+- name: Setup reuired by sudo
+  hosts: podman
+  become: yes
+  vars:
+    user: snapstromegon
+  tasks:
+    - name: Install yum packages
+      yum:
+        name:
+          - container-selinux
+          
+    - name: Setup user namespaces
+      sysctl:
+        name: user.max_user_namespaces
+        value: 144082
+
+    - name: Set subuid for test user
+      lineinfile:
+        path: /etc/subuid
+        regexp: "^{{ user }}:100000:65535"
+        line: "{{ user }}:100000:65535"
+    - name: Set subgid for test user
+      lineinfile:
+        path: /etc/subgid
+        regexp: "^{{ user }}:100000:65535"
+        line: "{{ user }}:100000:65535"

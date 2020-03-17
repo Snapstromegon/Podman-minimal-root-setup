@@ -1,0 +1,15 @@
+- name: Immitate Uberspace CentOS setup
+  hosts: podman
+  become: yes
+  tasks:
+    - name: Install yum packages
+      yum:
+        name:
+          - audit-libs-python
+          - policycoreutils-python
+          - checkpolicy
+          - python-IPy
+          - setools-libs
+          - libcgroup
+          - libsemanage-python
+          - yum-utils
