@@ -13,3 +13,15 @@
           - libcgroup
           - libsemanage-python
           - yum-utils
+          - unzip
+    - name: Enable hidepid
+      become: yes
+      lineinfile:
+        path: /etc/fstab
+        regexp: '^proc /proc proc .*hidepid=2.*'
+        line: proc /proc proc defaults,hidepid=2 0 0
+      register: hidepid_enabled
+    - name: Reboot for fstab
+      reboot:
+        reboot_timeout: 3600
+      when: hidepid_enabled.changed

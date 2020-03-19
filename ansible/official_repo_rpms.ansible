@@ -1,5 +1,5 @@
-- include: 01_immitate_uberspace.ansible
-- include: 02_pre_setup.ansible
+- import_playbook: 01_immitate_uberspace.ansible
+- import_playbook: 02_pre_setup.ansible
 
 - name: "Test"
   hosts: podman

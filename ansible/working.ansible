@@ -1,0 +1,23 @@
+- import_playbook: default_yum_install.ansible
+
+- name: Patch default install
+  hosts: podman
+  become: yes
+  tasks:
+    - name: Download slirp4netns release
+      get_url:
+        url: https://github.com/rootless-containers/slirp4netns/releases/download/v1.0.0-beta.0/slirp4netns-x86_64
+        dest: /usr/bin/slirp4netns
+
+    - name: Download conmon
+      unarchive:
+        remote_src: yes
+        src: https://github.com/containers/conmon/releases/download/v2.0.13/binaries.zip
+        mode: u=rx,g=rx,o=rx
+        dest: /usr/
+
+    - name: Copy Podman Binary
+      copy:
+        src: ../bins/podman
+        dest: /usr/bin/podman
+        mode: u=rx,g=rx,o=rx
